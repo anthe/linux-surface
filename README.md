@@ -1,3 +1,5 @@
+# This repo contains modifications for NixOS compatibility
+
 # Linux Surface
 
 Linux running on the Microsoft Surface devices . Follow the instructions below to install the latest kernel and config files.
