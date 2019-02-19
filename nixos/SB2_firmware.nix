@@ -6,8 +6,6 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ unzip kmod ];
 
-  patches = [ ./98-keyboardscovers.patch ];
-
   buildPhase = "";
 
   installPhase = ''
