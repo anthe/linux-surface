@@ -51,6 +51,8 @@ Linux running on the Microsoft Surface devices . Follow the instructions below t
 
 ### Download Pre-built Kernel and Headers
 
+The setup.sh script in the below Instructions will handle downloading these for you. Otherwise, you may still download them directly (not recommended as you will want to run the setup.sh script).
+
 Downloads for ubuntu based distros (other distros will need to compile from source using the included patches):
 
 https://github.com/jakeday/linux-surface/releases
@@ -103,7 +105,7 @@ If you don't want to use the pre-built kernel and headers, you can compile the k
   ```
 3. Checkout the version of the kernel you wish to target (replacing with your target version):
   ```
-  git checkout v4.y.z
+  git checkout v5.y.z
   ```
 4. Apply the kernel patches from the linux-surface repo (this one, and assuming you cloned it to ~/linux-surface):
   ```
@@ -134,7 +136,7 @@ Please consult the [SIGNING.md](SIGNING.md).
 
 * If you are getting stuck at boot when loading the ramdisk, you need to install the Processor Microcode Firmware for Intel CPUs (usually found under Additional Drivers in Software and Updates).
 * Do not install TLP! It can cause slowdowns, laggy performance, and occasional hangs! You have been warned.
-* For Surface (Pro) 3, you may need to add the boot command i915.enable_ipts=0 to boot.
+* If you chose to use hibernate over suspend, please follow the instructions [here](https://fitzcarraldoblog.wordpress.com/2018/07/14/configuring-lubuntu-18-04-to-enable-hibernation-using-a-swap-file/).
 
 ### Support
 

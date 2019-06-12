@@ -1,6 +1,6 @@
-From cf6e06464c190de8ed1fa0c42d0feb305c87a677 Mon Sep 17 00:00:00 2001
+From f2aae4bbd6842ac44f0d7223bb3ffc11da881b00 Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Thu, 6 Jun 2019 13:35:21 -0400
+Date: Thu, 6 Jun 2019 13:41:37 -0400
 Subject: [PATCH 08/12] wifi
 
 ---
@@ -33,10 +33,10 @@ index 042a1d07f686..fc9041f58e9f 100644
  
  		skb_src = skb_dequeue(&pra_list->skb_head);
 diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index 47ec5293c045..435c346116a2 100644
+index e582d9b3e50c..92c49eb3c5a3 100644
 --- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
 +++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-@@ -428,7 +428,10 @@ mwifiex_cfg80211_set_power_mgmt(struct wiphy *wiphy,
+@@ -437,7 +437,10 @@ mwifiex_cfg80211_set_power_mgmt(struct wiphy *wiphy,
  		mwifiex_dbg(priv->adapter, INFO,
  			    "info: ignore timeout value for IEEE Power Save\n");
  
@@ -250,7 +250,7 @@ index 69e3b624adbb..884bad677cc3 100644
  	if (adapter->curr_cmd->wait_q_enabled)
  		adapter->cmd_wait_q.status = -1;
 diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
-index 433c6a16870b..a2ff1ee3d230 100644
+index d445acc4786b..ae8e60cc17cb 100644
 --- a/drivers/net/wireless/marvell/mwifiex/usb.c
 +++ b/drivers/net/wireless/marvell/mwifiex/usb.c
 @@ -144,6 +144,8 @@ static int mwifiex_usb_recv(struct mwifiex_adapter *adapter,

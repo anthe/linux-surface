@@ -1,6 +1,6 @@
-From 5b2a1f69cb5cde820daefefd099ca3f2a5798e56 Mon Sep 17 00:00:00 2001
+From 60b85d6a779a891319435c500ff2a57bc8ac9d3f Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Thu, 6 Jun 2019 13:34:54 -0400
+Date: Thu, 6 Jun 2019 13:41:14 -0400
 Subject: [PATCH 06/12] hid
 
 ---
@@ -11,10 +11,10 @@ Subject: [PATCH 06/12] hid
  4 files changed, 86 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index 97d33b8ed36c..bd7066157b00 100644
+index adce58f24f76..5cc94abc677e 100644
 --- a/drivers/hid/hid-ids.h
 +++ b/drivers/hid/hid-ids.h
-@@ -801,11 +801,22 @@
+@@ -816,11 +816,22 @@
  #define USB_DEVICE_ID_MS_DIGITAL_MEDIA_3KV1 0x0732
  #define USB_DEVICE_ID_MS_DIGITAL_MEDIA_600  0x0750
  #define USB_DEVICE_ID_MS_COMFORT_MOUSE_4500	0x076c
@@ -39,14 +39,14 @@ index 97d33b8ed36c..bd7066157b00 100644
 +#define USB_DEVICE_ID_MS_SURFACE_GO			0x096f
 +#define USB_DEVICE_ID_MS_SURFACE_VHF		0xf001
 +#define USB_DEVICE_ID_MS_POWER_COVER		0x07da
+ #define USB_DEVICE_ID_MS_XBOX_ONE_S_CONTROLLER	0x02fd
  #define USB_DEVICE_ID_MS_PIXART_MOUSE    0x00cb
  
- #define USB_VENDOR_ID_MOJO		0x8282
 diff --git a/drivers/hid/hid-microsoft.c b/drivers/hid/hid-microsoft.c
-index 72d983626afd..133395b45022 100644
+index 330cb073cb66..f45fea460678 100644
 --- a/drivers/hid/hid-microsoft.c
 +++ b/drivers/hid/hid-microsoft.c
-@@ -313,7 +313,8 @@ static const struct hid_device_id ms_devices[] = {
+@@ -441,7 +441,8 @@ static const struct hid_device_id ms_devices[] = {
  		.driver_data = MS_HIDINPUT },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_COMFORT_KEYBOARD),
  		.driver_data = MS_ERGONOMY},
@@ -57,10 +57,10 @@ index 72d983626afd..133395b45022 100644
  		.driver_data = MS_PRESENTER },
  	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_MICROSOFT, 0x091B),
 diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
-index 831617c386e6..21337070068a 100644
+index 1fb13dad7554..3ba9832f5001 100644
 --- a/drivers/hid/hid-multitouch.c
 +++ b/drivers/hid/hid-multitouch.c
-@@ -1978,6 +1978,63 @@ static const struct hid_device_id mt_devices[] = {
+@@ -1976,6 +1976,63 @@ static const struct hid_device_id mt_devices[] = {
  		HID_USB_DEVICE(USB_VENDOR_ID_LG,
  			USB_DEVICE_ID_LG_MELFAS_MT) },
  
@@ -125,10 +125,10 @@ index 831617c386e6..21337070068a 100644
  	{ .driver_data = MT_CLS_CONFIDENCE_MINUS_ONE,
  		MT_USB_DEVICE(USB_VENDOR_ID_ASUS,
 diff --git a/drivers/hid/hid-quirks.c b/drivers/hid/hid-quirks.c
-index e24790c988c0..70f75d60c8c9 100644
+index 77ffba48cc73..517143d5b305 100644
 --- a/drivers/hid/hid-quirks.c
 +++ b/drivers/hid/hid-quirks.c
-@@ -112,6 +112,17 @@ static const struct hid_device_id hid_quirks[] = {
+@@ -113,6 +113,17 @@ static const struct hid_device_id hid_quirks[] = {
  	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_SURFACE_PRO_2), HID_QUIRK_NO_INIT_REPORTS },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_TOUCH_COVER_2), HID_QUIRK_NO_INIT_REPORTS },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_TYPE_COVER_2), HID_QUIRK_NO_INIT_REPORTS },
