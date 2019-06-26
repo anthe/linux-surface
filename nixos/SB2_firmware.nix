@@ -1,8 +1,8 @@
-{stdenv, fetchgit, unzip, kmod, coreutils}:
+{stdenv,  unzip, kmod}:
 stdenv.mkDerivation rec {
   name = "SB2_firmware";
 
-  src = ./linux-surface;
+  src = ./..;
 
   buildInputs = [ unzip kmod ];
 
@@ -28,7 +28,8 @@ stdenv.mkDerivation rec {
     mkdir -p "$out/lib/udev/rules.d"
     cp root/etc/udev/rules.d/* $out/lib/udev/rules.d/
 
-    sed -i -e "s|modprobe|${kmod}/bin/modprobe|" $out/lib/udev/rules.d/*
-    
+
   '';
+  # needed for 98-keyboards for reloading nouveau
+  # sed -i -e "s|modprobe|${kmod}/bin/modprobe|" $out/lib/udev/rules.d/*
 }

@@ -3,86 +3,79 @@
   nixpkgs.overlays = [(self: super: {
     libwacom = super.callPackage ./surface_libwacom.nix {};
     SB2_firmware = super.callPackage ./SB2_firmware.nix {};
-    SB2_kernel = super.linuxPackages_4_19.extend( self: (ksuper: {
+    SB2_kernel = super.linuxPackages_5_1.extend( self: (ksuper: {
       kernel = ksuper.kernel.override {
+        version = "5.1.9sdfsdf";
         kernelPatches = [
           pkgs.kernelPatches.bridge_stp_helper
           pkgs.kernelPatches.modinst_arg_list_too_long
-          { patch = ./linux-surface/patches/4.19/0001-surface-acpi.patch; name = "SB2-acpi"; }
-          { patch = ./linux-surface/patches/4.19/0002-suspend.patch; name = "SB2-suspend"; }
-          { patch = ./linux-surface/patches/4.19/0003-buttons.patch; name = "SB2-buttons"; }
-          { patch = ./linux-surface/patches/4.19/0004-cameras.patch; name = "SB2-cameras"; }
-          { patch = ./linux-surface/patches/4.19/0005-ipts.patch; name = "SB2-ipts"; }
-          { patch = ./linux-surface/patches/4.19/0006-hid.patch; name = "SB2-hid"; }
-          { patch = ./linux-surface/patches/4.19/0007-sdcard-reader.patch; name = "SB2-sdcard"; }
-          { patch = ./linux-surface/patches/4.19/0008-wifi.patch; name = "SB2-wifi"; }
-          { patch = ./linux-surface/patches/4.19/0009-surface3-power.patch; name = "S3-power"; }
-          { patch = ./linux-surface/patches/4.19/0010-surface-dock.patch; name = "SB2-dock"; }
-          { patch = ./linux-surface/patches/4.19/0011-mwlwifi.patch; name = "SB2-mwlwifi"; }
+          { patch = ../patches/5.1/0001-surface-acpi.patch; name = "SB2-acpi"; }
+          { patch = ../patches/5.1/0002-suspend.patch; name = "SB2-suspend"; }
+          { patch = ../patches/5.1/0003-buttons.patch; name = "SB2-buttons"; }
+          { patch = ../patches/5.1/0004-cameras.patch; name = "SB2-cameras"; }
+          { patch = ../patches/5.1/0005-ipts.patch; name = "SB2-ipts"; }
+          { patch = ../patches/5.1/0006-hid.patch; name = "SB2-hid"; }
+          { patch = ../patches/5.1/0007-sdcard-reader.patch; name = "SB2-sdcard"; }
+          { patch = ../patches/5.1/0008-wifi.patch; name = "SB2-wifi"; }
+          { patch = ../patches/5.1/0009-surface3-power.patch; name = "S3-power"; }
+          { patch = ../patches/5.1/0010-surface-dock.patch; name = "SB2-dock"; }
+          { patch = ../patches/5.1/0011-mwlwifi.patch; name = "SB2-mwlwifi"; }
+          { patch = ../patches/5.1/0012-surface-lte.patch; name = "SB2-lte"; }
         ];
-        extraConfig = (builtins.readFile ./config);
-        /*
-        structuredExtraConfig = {
-          #LOCALVERSION="-surface";
-          CFG80211_DEFAULT_PS="n";
-          PCIEPORTBUS="y";
-          INTEL_IPTS="m";
-          #VIDEO_IPU3_CIO2="m";
-          #VIDEO_OV5693="m";
-          #VIDEO_OV8865="m";
-          DRM_I915_ALPHA_SUPPORT="y";
-          #INTEL_ATOMISP="y";
-          SURFACE_ACPI="m";
-          DEBUG_INFO="n";
-          SERIAL_DEV_BUS="y";
-          SERIAL_DEV_CTRL_TTYPORT="y";
-          NF_CONNTRACK_IPV6="m";
-          NF_TABLES_IPV6="y";
-          NFT_CHAIN_ROUTE_IPV6="m";
-          NFT_CHAIN_NAT_IPV6="m";
-          NFT_MASQ_IPV6="m";
-          NFT_REDIR_IPV6="m";
-          NFT_REJECT_IPV6="m";
-          NFT_DUP_IPV6="m";
-          NFT_FIB_IPV6="m";
-          NF_NAT_IPV6="m";
-          NF_NAT_MASQUERADE_IPV6="y";
-          IP6_NF_MATCH_SRH="m";
-          IP6_NF_NAT="m";
-          IP6_NF_TARGET_MASQUERADE="m";
-          IP6_NF_TARGET_NPT="m";
-          MWLWIFI="m";
-        };
-        */
+        extraConfig = (builtins.readFile ./kernel-config);
       };
     }));
   })];
 
-  hardware.firmware = [ pkgs.SB2_firmware ];
-  services.udev.packages = [ pkgs.SB2_firmware pkgs.libwacom ];
-  hardware.bluetooth.enable = true;
-  powerManagement = {
-    enable = true;
-    cpuFreqGovernor = "powersave";
-  };
 
-  services.acpid.enable = true; 
+  hardware.firmware = [ pkgs.SB2_firmware ];
 
   boot = {
-    blacklistedKernelModules = [ "nouveau" "surfacepro3_button" ];
+    blacklistedKernelModules = [ "surfacepro3_button" "nouveau" ];
+    #blacklistedKernelModules = [ "surfacepro3_button" ];
     kernelPackages = pkgs.SB2_kernel;
+    extraModulePackages = [ pkgs.SB2_kernel.bbswitch ];
+    extraModprobeConfig = (builtins.readFile ../root/etc/modprobe.d/snd-hda-intel.conf) + (builtins.readFile ../root/etc/modprobe.d/soc-button-array.conf);
     initrd = {
       kernelModules = [ "hid" "hid_sensor_hub" "i2c_hid" "hid_generic" "usbhid" "hid_multitouch" "intel_ipts" "surface_acpi" ];
       availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" ];
     };
   };
-  
+
+  services.udev.packages = [ pkgs.SB2_firmware pkgs.libwacom ];
+
+  powerManagement = {
+    enable = true;
+  };
+
+  services.acpid = {
+    enable = true;
+    handlers = {
+      lid = { action = ""; event = "button/lid.*"; };
+    };
+  };
+
   services.xserver.videoDrivers = [ "intel" ];
-  #hardware.bumblebee = {
-    #enable = true;
-    #driver = "nouveau";
-    #pmMethod = "switcheroo";
-  #};
+  #services.xserver.videoDrivers = [ "nouveau" ];
+  # bbswitch doesn't load
+  # switcheroo doesn't work
+  # nvidia-smi doesn't detect any hardware, it might only detect it with X
+  # lshw -C display does detect the graphics card
+  # X loads nvidia, then unloads it due to GLX error, this is maybe the best place to start
+  hardware.bumblebee = {
+    enable = false;
+    driver = "nvidia";
+    pmMethod = "switcheroo";
+  };
+
+  hardware.nvidia = {
+    modesetting.enable = false;
+    optimus_prime = {
+      enable = false;
+      intelBusId = "PCI:0:2:0";
+      nvidiaBusId = "PCI:2:0:0";
+    };
+  };
  
   services.xserver.xkbOptions = "caps:hyper";
   
@@ -99,6 +92,7 @@
 
   powerManagement.powerDownCommands = ''
     source /etc/profile
+    systemctl stop home-izak-.org_sync.mount
     systemctl stop wpa_supplicant.service
     modprobe -r mwlwifi
     modprobe -r intel_ipts
@@ -109,6 +103,10 @@
     modprobe -r cfg80211;
   '';
 
+    #acpitool -W 21 >2 /dev/null
+    #acpitool -W 5 >2 /dev/null
+    #echo disabled > /sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0D:00/power/wakeup
+    #acpitool -W 2 >2 /dev/null
   powerManagement.powerUpCommands = ''
     source /etc/profile
     modprobe -r intel_ipts
@@ -128,6 +126,8 @@
     modprobe -i mwlwifi
     echo 1 > /sys/bus/pci/rescan
     systemctl restart wpa_supplicant.service
+    modprobe -r soc_button_array
+    modprobe -i soc_button_array
   '';
   powerManagement.resumeCommands = ''
     source /etc/profile
@@ -150,5 +150,6 @@
     modprobe -i soc_button_array
     echo 1 > /sys/bus/pci/rescan
     systemctl restart wpa_supplicant.service
+    systemctl start home-izak-.org_sync.mount
   '';
 }

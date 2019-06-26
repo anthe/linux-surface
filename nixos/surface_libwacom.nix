@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     sha256 = "102kz0q7i0bjsnl6yy83vcj2rpir12rs2d4xr0wvhw84rs5sp7bb";
   };
 
-  patches = [ ./libwacom-surface/mei-bus.patch ./libwacom-surface/surface-tablet-data.patch ];
+  patches = [ ../../libwacom-surface/mei-bus.patch ../../libwacom-surface/surface-tablet-data.patch ];
 
   nativeBuildInputs = [ pkgconfig ];
 
