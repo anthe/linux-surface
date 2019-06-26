@@ -5,7 +5,6 @@
     SB2_firmware = super.callPackage ./SB2_firmware.nix {};
     SB2_kernel = super.linuxPackages_5_1.extend( self: (ksuper: {
       kernel = ksuper.kernel.override {
-        version = "5.1.9sdfsdf";
         kernelPatches = [
           pkgs.kernelPatches.bridge_stp_helper
           pkgs.kernelPatches.modinst_arg_list_too_long
@@ -18,9 +17,8 @@
           { patch = ../patches/5.1/0007-sdcard-reader.patch; name = "SB2-sdcard"; }
           { patch = ../patches/5.1/0008-wifi.patch; name = "SB2-wifi"; }
           { patch = ../patches/5.1/0009-surface3-power.patch; name = "S3-power"; }
-          { patch = ../patches/5.1/0010-surface-dock.patch; name = "SB2-dock"; }
-          { patch = ../patches/5.1/0011-mwlwifi.patch; name = "SB2-mwlwifi"; }
-          { patch = ../patches/5.1/0012-surface-lte.patch; name = "SB2-lte"; }
+          { patch = ../patches/5.1/0010-mwlwifi.patch; name = "SB2-mwlwifi"; }
+          { patch = ../patches/5.1/0011-surface-lte.patch; name = "SB2-lte"; }
         ];
         extraConfig = (builtins.readFile ./kernel-config);
       };
