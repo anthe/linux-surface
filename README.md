@@ -2,7 +2,8 @@
 
 # Linux Surface
 
-Linux running on the Microsoft Surface devices . Follow the instructions below to install the latest kernel and config files.
+Linux running on the Microsoft Surface devices.
+Follow the instructions below to install the latest kernel and config files.
 
 ### Supported Devices
 
@@ -11,135 +12,98 @@ Linux running on the Microsoft Surface devices . Follow the instructions below t
 * Surface Go
 * Surface Laptop
 * Surface Laptop 2
+* Surface Laptop 3
 * Surface Pro 3
 * Surface Pro 4
 * Surface Pro 2017
 * Surface Pro 6
+* Surface Pro 7
 * Surface Studio
 
-### What's Working
+### Features / What's Working
 
-* Keyboard (and backlight)
-* Touchpad
-* 2D/3D Acceleration
-* Touchscreen
-* Pen
-* WiFi
-* Bluetooth
-* Speakers
-* Power Button
-* Volume Buttons
-* SD Card Reader
-* Cameras (partial support, disabled for now)
-* Hibernate
-* Sensors (accelerometer, gyroscope, ambient light sensor)
-* Battery Readings
-* Docking/Undocking Tablet and Keyboard
-* Surface Docks
-* DisplayPort
-* USB-C (including for HDMI Out)
-* Dedicated Nvidia GPU (Surface Book 2)
-
-### What's NOT Working
-
-* Dedicated Nvidia GPU (if you have a performance base on a Surface Book 1, otherwise onboard works fine)
-* Cameras (not fully supported yet)
-* Connected Standby is not supported yet
+See the [feature matrix](https://github.com/linux-surface/linux-surface/wiki/Supported-Devices-and-Features#feature-matrix) for more information about each device.
 
 ### Disclaimer
-* For the most part, things are tested on a Surface Book. While most things are reportedly fully working on other devices, your mileage may vary. Please look at the issues list for possible exceptions.
 
-### Download Pre-built Kernel and Headers
+* For the most part, things are tested on a Surface Book 2.
+  While most things are reportedly fully working on other devices, your mileage may vary.
+  Please look at the issues list for possible exceptions. 
 
-The setup.sh script in the below Instructions will handle downloading these for you. Otherwise, you may still download them directly (not recommended as you will want to run the setup.sh script).
+## Installation and Setup
 
-Downloads for ubuntu based distros (other distros will need to compile from source using the included patches):
+For a more detailed installation and setup guide, please refer to the corresponding [Wiki page][wiki-setup].
+There, you may also find device-specific caveats.
+A short overview of the process is provided below.
 
-https://github.com/jakeday/linux-surface/releases
+Releases are provided for both Debian and Arch Linux based distributions, but if you're running Arch, you may want to consider looking at [this][arch-linux-surface] project instead, or [here][fedora-linux-surface] if you're running Fedora.
+These releases can be found here: https://github.com/linux-surface/linux-surface/releases.
 
-You will need to download the image, headers and libc-dev deb files for the version you want to install.
+You may also want to consider setting up one of the [package repositories][wiki-repos] to obtain automatic updates.
+After the installation, you should have a look at the [post-installation notes][wiki-setup-post], specifically you may want to set up [secure-boot][wiki-secure-boot] and install the proprietary firmware package (usually named `linux-firmware`) if you have not done so already.
 
-### Instructions
+1. Before you can actually start, you will need to install some required packages.
+   On Debian based distributions, you can do this by simply running
+   ```
+   sudo apt install git
+   ```
 
-0. (Prep) Install Dependencies:
-  ```
-   sudo apt install git curl wget sed
-  ```
-1. Clone the linux-surface repo:
-  ```
-   git clone --depth 1 https://github.com/jakeday/linux-surface.git ~/linux-surface
-  ```
-2. Change directory to linux-surface repo:
-  ```
-   cd ~/linux-surface
-  ```
-3. Run setup script:
-  ```
-   sudo sh setup.sh
-  ```
-4. Reboot on installed kernel.
+2. **Clone this repository.**
+   To save some time, you can use the `--depth 1` flag.
+   ```
+   git clone --depth 1 https://github.com/linux-surface/linux-surface.git
+   ```
+   If you want to update this git repository later on, e.g. for re-running the `setup.sh` script, you can simply run `git pull` inside the repository.
 
-The setup script will handle installing the latest kernel for you. You can also choose to download any version you want and install yourself:
-Install the headers, kernel and libc-dev (make sure you cd to your download location first):
-  ```
-  sudo dpkg -i linux-headers-[VERSION].deb linux-image-[VERSION].deb linux-libc-dev-[VERSION].deb
-  ```
+3. Next, change into the `linux-surface` directory (`cd linux-surface`) and run the setup script via
+   ```
+   sudo ./setup.sh
+   ```
+   Follow the instructions and make your choices.
 
-### Compiling the Kernel from Source
+4. **Download and install the required packages.**
+   You can use one of the package repositories to install the kernel and libwacom package.
 
-#### For Debian-Based Systems
+   Alternatively, you can also install them manually via (for Debian) after
+   downloading these files from the [releases][releases] section of this repo.
+   ```
+   sudo dpkg -i linux-headers-[VERSION].deb linux-image-[VERSION].deb linux-libc-dev-[VERSION].deb
+   ```
 
-If you don't want to use the pre-built kernel and headers, you can compile the kernel yourself following these steps:
+5. Finally, you will need to re-boot your system and boot into the linux-surface kernel.
+   Please make sure that you actually boot in the right kernel via `uname -a` before opening any issues.
+   This should give you a version string containing `surface`.
+   If not, you may need to configure your bootloader.
+   For this, please refer to the instructions provided by your bootloader and/or distribution.
 
-0. (Prep) Install the required packages for compiling the kernel:
-  ```
-  sudo apt install build-essential binutils-dev libncurses5-dev libssl-dev ccache bison flex libelf-dev
-  ```
-1. Clone the mainline stable kernel repo:
-  ```
-  git clone git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git ~/linux-stable
-  ```
-2. Go into the linux-stable directory:
-  ```
-  cd ~/linux-stable
-  ```
-3. Checkout the version of the kernel you wish to target (replacing with your target version):
-  ```
-  git checkout v5.y.z
-  ```
-4. Apply the kernel patches from the linux-surface repo (this one, and assuming you cloned it to ~/linux-surface):
-  ```
-  for i in ~/linux-surface/patches/[VERSION]/*.patch; do patch -p1 < $i; done
-  ```
-5. Use config for kernel series (may need to manually change for your distro):
-  ```
-  cp ~/linux-surface/configs/[VERSION]/config .config
-  ```
-6. Compile the kernel and headers (for ubuntu, refer to the build guide for your distro):
-  ```
-  make -j `getconf _NPROCESSORS_ONLN` deb-pkg LOCALVERSION=-linux-surface
-  ```
-7. Install the headers, kernel and libc-dev:
-  ```
-  sudo dpkg -i linux-headers-[VERSION].deb linux-image-[VERSION].deb linux-libc-dev-[VERSION].deb
-  ```
 
-#### For Arch-Based Systems
+If you want to compile the kernel yourself (e.g. if your distribution is not supported), please have a look at the [wiki][wiki-compiling].
 
-Have a look at [this](https://github.com/dmhacker/arch-linux-surface) repository.
 
-### Signing the kernel for Secure Boot
+## Additional Information
 
-Please consult the [SIGNING.md](SIGNING.md).
-
-### NOTES
+### Notes
 
 * If you are getting stuck at boot when loading the ramdisk, you need to install the Processor Microcode Firmware for Intel CPUs (usually found under Additional Drivers in Software and Updates).
 * Do not install TLP! It can cause slowdowns, laggy performance, and occasional hangs! You have been warned.
-* If you chose to use hibernate over suspend, please follow the instructions [here](https://fitzcarraldoblog.wordpress.com/2018/07/14/configuring-lubuntu-18-04-to-enable-hibernation-using-a-swap-file/).
+* If you want to use hibernate instead of suspend, you need to create a swap partition or file, please follow your distribution's instructions (or [here][hibernate-setup]).
 
 ### Support
 
-If you have an issue with the kernel, please feel free to create on issue here to track it. If you have questions or need support, please use our [Gitter Community](https://gitter.im/linux-surface)!
+If you have questions or need support, please use our [Gitter Community][gitter]!
+For development related questions and discussions, please consider joining our IRC channel on freenode (`freenode/##linux-surface`) or the [equivalent Matrix bridge](https://matrix.to/#/#freenode_##linux-surface:matrix.org).
 
-  
+[wiki-setup]: https://github.com/linux-surface/linux-surface/wiki/Installation-and-Setup
+[wiki-setup-post]: https://github.com/linux-surface/linux-surface/wiki/Installation-and-Setup#post-installation
+[wiki-repos]: https://github.com/linux-surface/linux-surface/wiki/Package-Repositories
+[wiki-secure-boot]: https://github.com/linux-surface/linux-surface/wiki/Secure-Boot
+[wiki-compiling]: https://github.com/linux-surface/linux-surface/wiki/Installation-and-Setup#compiling-the-kernel-from-source
+
+[arch-linux-surface]: https://github.com/dmhacker/arch-linux-surface
+[fedora-linux-surface]: https://github.com/StollD/fedora-linux-surface/
+
+[gitter]: https://gitter.im/linux-surface
+[hibernate-setup]: https://fitzcarraldoblog.wordpress.com/2018/07/14/configuring-lubuntu-18-04-to-enable-hibernation-using-a-swap-file
+[releases]: https://github.com/linux-surface/linux-surface/releases
+
+[linux-surface-kernel]: https://github.com/linux-surface/kernel/
